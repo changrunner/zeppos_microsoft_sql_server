@@ -11,7 +11,7 @@ class MsConnection:
         self._conn = None
 
     def __del__(self):
-        AppLogger.logger.info("Closing and destroying connection.")
+        AppLogger.logger.debug("Closing and destroying connection.")
         try:
             if self._engine:
                 self._engine.dispose()
@@ -23,7 +23,7 @@ class MsConnection:
                 self._conn.close()
         except:
             pass
-        AppLogger.logger.info("Closed and destroyed connection.")
+        AppLogger.logger.debug("Closed and destroyed connection.")
 
     @property
     def pyodbc_connection(self):

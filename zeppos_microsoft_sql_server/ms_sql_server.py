@@ -1,6 +1,8 @@
 from zeppos_logging.app_logger import AppLogger
 import pandas as pd
 from zeppos_microsoft_sql_server.ms_connection import MsConnection
+from zeppos_bcpy.sql_configuration import SqlConfiguration
+from zeppos_bcpy.dataframe import Dataframe
 
 class MsSqlServer:
     def __init__(self, connection_string):
@@ -39,6 +41,20 @@ class MsSqlServer:
 
                 temp = df.truncate(before=i, after=after)
                 temp.to_sql(table_name, self.connection.sqlalchemy_connection, if_exists='append', index=False, schema=table_schema)
+            return True
+        except Exception as error:
+            return False
+
+    def save_dataframe_in_bulk(self, df, schema_name, table_name, use_existsing=False):
+        try:
+            sql_configuration = SqlConfiguration(
+                server_type="microsoft",
+                server_name=self.connection.connection_string.server_name,
+                database_name=self.connection.connection_string.database_name,
+                schema_name=schema_name,
+                table_name=table_name
+            )
+            Dataframe.to_sqlserver_creating_instance(df, sql_configuration)
             return True
         except Exception as error:
             return False

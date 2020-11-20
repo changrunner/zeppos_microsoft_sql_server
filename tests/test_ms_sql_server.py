@@ -29,6 +29,17 @@ class TestTheProjectMethods(unittest.TestCase):
         self.assertEqual(1, pd.read_sql("SELECT TOP 1 column_1 FROM dbo.test_table", pyodbc.connect(
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")).shape[0])
 
+    def test_save_dataframe_in_bulk_method(self):
+        ms_sql = MsSqlServer(
+            "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
+
+        # test
+        df_actual = pd.DataFrame({'column_1': [3600]}, columns=['column_1'])
+        self.assertEqual(True, ms_sql.save_dataframe_in_bulk(df_actual, "dbo", "test_table"))
+        self.assertEqual(1, pd.read_sql("SELECT TOP 1 column_1 FROM dbo.test_table", pyodbc.connect(
+            "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")).shape[
+            0])
+
     def test_read_data_into_dataframe_method(self):
         ms_sql = MsSqlServer(
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
