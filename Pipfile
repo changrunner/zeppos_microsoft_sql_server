@@ -3,14 +3,25 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[[source]]
+name = "test"
+url = "https://test.pypi.org/simple"
+verify_ssl = true
+
 [dev-packages]
-setuptools = "==49.6.0"
-wheel = "==0.35.1"
-twine = "==3.2.0"
-python-decouple = "==3.3"
-pytest = "*"
+setuptools = ">=49.6.0"
+wheel = ">=0.35.1"
+twine = ">=3.2.0"
+python-decouple = ">=3.3"
+pytest = ">=6.1.2"
+testfixtures = ">=6.15.0"
 
 [packages]
+bcpy = ">=0.1.8"
+pandas = ">=1.1.4"
+pyodbc = ">=4.0.25"
+sqlalchemy = ">=1.2.17"
+zeppos-core = ">=1.0.4"
 
 [requires]
 python_version = "3.7"
