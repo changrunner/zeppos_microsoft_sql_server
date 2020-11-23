@@ -51,7 +51,8 @@ class MsSqlServer:
         Use with small datasets to direct insert into a table.
         """
         try:
-            AppLogger.logger.info(f"Saving data to sql server. Record_count: [{len(df)}]")
+            AppLogger.logger.info(f"Saving data to sql server "
+                                  f"[{table_schema}].[{table_name}]. Record_count: [{len(df)}]")
             for i in range(0, len(df), batch_size):
                 after = i + (batch_size - 1)
                 if after > len(df):
@@ -61,6 +62,7 @@ class MsSqlServer:
                 temp.to_sql(table_name, self.connection.sqlalchemy_connection, if_exists='append', index=False, schema=table_schema)
             return True
         except Exception as error:
+            AppLogger.logger.error(f"Could not save dataframe by record: {error}")
             return False
 
     def save_dataframe_in_bulk(self, df, schema_name, table_name, use_existsing=False):
