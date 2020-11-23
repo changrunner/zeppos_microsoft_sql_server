@@ -17,6 +17,24 @@ class TestTheProjectMethods(unittest.TestCase):
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
         self.assertEqual(True, ms_sql.drop_table("dbo", "table_does_not_exist"))
 
+    def test_create_table_method(self):
+        ms_sql = MsSqlServer(
+            "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
+        df = pd.DataFrame({'column_1': [3600],
+                           'column_2': ['12'],
+                           'column_3': [23]
+                           }, columns=['column_1', 'column_2', 'column_3'])
+        df['column_1'] = df['column_1'].astype(object)
+        df['column_2'] = df['column_2'].astype(str)
+        df['column_3'] = df['column_3'].astype(int)
+        ms_sql.drop_table("dbo", "table_does_not_exist")
+        self.assertEqual(True, ms_sql.create_table("dbo", "table_does_not_exist", df))
+
+    def test_does_table_exists(self):
+        ms_sql = MsSqlServer(
+            "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
+        self.assertEqual(False, ms_sql.does_table_exists('dbo', 'test123456123'))
+
     def test_save_dataframe_by_record_method(self):
         ms_sql = MsSqlServer(
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
