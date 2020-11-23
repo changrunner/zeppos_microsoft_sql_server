@@ -3,6 +3,7 @@ import pandas as pd
 from zeppos_microsoft_sql_server.ms_connection import MsConnection
 from zeppos_bcpy.sql_configuration import SqlConfiguration
 from zeppos_bcpy.dataframe import Dataframe
+from zeppos_microsoft_sql_server.sql_statement import SqlStatement
 
 class MsSqlServer:
     def __init__(self, connection_string):
@@ -25,6 +26,23 @@ class MsSqlServer:
             return True
         except:
             return False
+
+    def create_table(self, table_schema, table_name, df):
+        try:
+            if isinstance(df, pd.core.frame.DataFrame):
+                if not self.does_table_exists(table_schema, table_name):
+                    AppLogger.logger.info(f'Create table [{table_schema}].[{table_name}]')
+                    self.execute_sql(SqlStatement.get_table_create_statement(table_schema, table_name, df))
+
+            return True
+        except:
+            return False
+
+    def does_table_exists(self, table_schema, table_name):
+        df = self.read_data_into_dataframe(
+            SqlStatement.get_does_table_exist_statement(table_schema,table_name)
+        )
+        return df.iloc[0]['record_count'] > 0
 
     def save_dataframe_by_record(self, df, table_schema, table_name, batch_size=500):
         """
