@@ -12,7 +12,7 @@ class MsSqlServer:
 
     def execute_sql(self, sql):
         try:
-            crs = self.connection.pyodbc_connection.cursor()
+            crs = self.connection.get_pyodbc_connection().cursor()
             crs.execute(sql)
             crs.commit()
             crs.close()
@@ -80,19 +80,22 @@ class MsSqlServer:
         except Exception as error:
             return False
 
-    def read_data_into_dataframe(self, sql_statement):
+    def read_data_into_dataframe(self, sql_statement, timeout=0):
         try:
-            return pd.read_sql(sql_statement, self.connection.pyodbc_connection)
+            AppLogger.logger.debug("Read_sql")
+            return pd.read_sql(sql_statement, self.connection.get_pyodbc_connection(timeout))
         except Exception as error:
+            print(error)
             AppLogger.logger.error(f"Error MsSqlServer.read_data_into_dataframe: {error}")
             return None
 
-    def extract_to_csv(self, sql_statement, csv_root_directory, csv_file_name):
+    def extract_to_csv(self, sql_statement, csv_root_directory, csv_file_name, timeout=0):
         if sql_statement:
             try:
+                AppLogger.logger.debug("Create csv file with today's date")
                 csv_file = CsvFile.create_csv_file_instance_with_todays_date(csv_root_directory, csv_file_name)
                 csv_file.save_dataframe(
-                    df=self.read_data_into_dataframe(sql_statement)
+                    df=self.read_data_into_dataframe(sql_statement, timeout)
                 )
                 return csv_file
             except Exception as error:

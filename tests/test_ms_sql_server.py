@@ -59,11 +59,25 @@ class TestTheProjectMethods(unittest.TestCase):
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")).shape[
             0])
 
-    def test_read_data_into_dataframe_method(self):
+    def test_1_read_data_into_dataframe_method(self):
         ms_sql = MsSqlServer(
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
         self.assertEqual(1,
             ms_sql.read_data_into_dataframe("SELECT TOP 1 COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS").shape[0])
+
+    def test_2_read_data_into_dataframe_method(self):
+        ms_sql = MsSqlServer(
+            "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
+        self.assertEqual(1, ms_sql.read_data_into_dataframe("""
+                SET NOCOUNT ON; -- This has to be here.
+                
+                DROP TABLE IF EXISTS #tmp
+                
+                SELECT DISTINCT TABLE_SCHEMA, TABLE_NAME into #tmp 
+                FROM INFORMATION_SCHEMA.COLUMNS
+            
+                SELECT count(1) as RECORD_COUNT from #tmp
+            """).shape[0])
 
     def test_extract_to_csv_method(self):
         ms_sql = MsSqlServer(
