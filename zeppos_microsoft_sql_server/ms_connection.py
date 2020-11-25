@@ -25,11 +25,10 @@ class MsConnection:
             pass
         AppLogger.logger.debug("Closed and destroyed connection.")
 
-    @property
-    def pyodbc_connection(self):
+    def get_pyodbc_connection(self, time_out=0):
         if self._conn:
             return self._conn
-        self._conn = pyodbc.connect(self.connection_string.value)
+        self._conn = pyodbc.connect(self.connection_string.value, time_out=time_out)
         return self._conn
 
     @property

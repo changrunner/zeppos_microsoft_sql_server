@@ -11,10 +11,10 @@ class TestTheProjectMethods(unittest.TestCase):
         self.assertEqual("master", ms_connection.connection_string.database_name)
         self.assertEqual(True, ms_connection.connection_string.trusted_connection)
 
-    def test_pyodbc_connection_method(self):
+    def test_get_pyodbc_connection_method(self):
         ms_connection = MsConnection(
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
-        self.assertEqual("<class 'pyodbc.Connection'>", str(type(ms_connection.pyodbc_connection)))
+        self.assertEqual("<class 'pyodbc.Connection'>", str(type(ms_connection.get_pyodbc_connection())))
 
     def test_sqlalchemy_connection_method(self):
         ms_connection = MsConnection(
