@@ -1,13 +1,14 @@
 from zeppos_data_manager.data_cleaner import DataCleaner
+from os import path
 
-class SqlStatement:
+class MsSqlStatement:
     @staticmethod
     def get_table_create_statement(table_schema, table_name, df):
         return \
             DataCleaner.strip_content(
                 f"""
                     CREATE TABLE [{table_schema}].[{table_name}] (
-                    {SqlStatement._get_columns_create_definition(df)}       
+                    {MsSqlStatement._get_columns_create_definition(df)}       
                     )
                 """
             )
@@ -26,3 +27,10 @@ class SqlStatement:
                "from INFORMATION_SCHEMA.tables \n" \
                f"where TABLE_SCHEMA = '{table_schema}' \n" \
                f"  and TABLE_NAME = '{table_name}'")
+
+    @staticmethod
+    def get_from_file(full_file_name):
+        if path.exists(full_file_name):
+            with open(full_file_name, 'r') as fl:
+                return fl.read()
+        return None

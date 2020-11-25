@@ -27,3 +27,9 @@ class MsConnectionString:
                 if key == "TRUSTED_CONNECTION":
                     self.trusted_connection = True
 
+    @staticmethod
+    def get_pyodbc_connection_string(server_name, database_name="master", odbc_version=17):
+        return f"DRIVER={{ODBC Driver {odbc_version} for SQL Server}}; SERVER={server_name}; " \
+               f"DATABASE={database_name}; Trusted_Connection=yes;"
+
+

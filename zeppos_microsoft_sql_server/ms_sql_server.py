@@ -3,7 +3,7 @@ import pandas as pd
 from zeppos_microsoft_sql_server.ms_connection import MsConnection
 from zeppos_bcpy.sql_configuration import SqlConfiguration
 from zeppos_bcpy.dataframe import Dataframe
-from zeppos_microsoft_sql_server.sql_statement import SqlStatement
+from zeppos_microsoft_sql_server.ms_sql_statement import MsSqlStatement
 from zeppos_csv.csv_file import CsvFile
 
 class MsSqlServer:
@@ -33,7 +33,7 @@ class MsSqlServer:
             if isinstance(df, pd.core.frame.DataFrame):
                 if not self.does_table_exists(table_schema, table_name):
                     AppLogger.logger.info(f'Create table [{table_schema}].[{table_name}]')
-                    self.execute_sql(SqlStatement.get_table_create_statement(table_schema, table_name, df))
+                    self.execute_sql(MsSqlStatement.get_table_create_statement(table_schema, table_name, df))
 
             return True
         except:
@@ -41,7 +41,7 @@ class MsSqlServer:
 
     def does_table_exists(self, table_schema, table_name):
         df = self.read_data_into_dataframe(
-            SqlStatement.get_does_table_exist_statement(table_schema,table_name)
+            MsSqlStatement.get_does_table_exist_statement(table_schema, table_name)
         )
         return df.iloc[0]['record_count'] > 0
 
@@ -87,27 +87,14 @@ class MsSqlServer:
             AppLogger.logger.error(f"Error MsSqlServer.read_data_into_dataframe: {error}")
             return None
 
-    def extract_to_csv(self, sql_statement, csv_root_directory, filename):
-        csv_file = CsvFile.create_csv_file_instance_with_todays_date(csv_root_directory, filename)
-        csv_file.save_dataframe(
-            df=self.read_data_into_dataframe(sql_statement)
-        )
-        return csv_file
-
-    # @staticmethod
-    # def insert_using_bcp(df, server_name, database_name,
-    #                      staging_table_schema, staging_table_name,
-    #                      username=None, password=None,
-    #                      use_existing_sql_table=False):
-    #     sql_config = {
-    #         'server': server_name,
-    #         'database': database_name,
-    #         'username': username,
-    #         'password': password
-    #     }
-    #     print(sql_config)
-    #     bdf = bcpy.DataFrame(df)
-    #     sql_table = bcpy.SqlTable(sql_config, table=staging_table_name, schema_name=staging_table_schema,
-    #                               batch_size=1000)  # bcp default batchsize is 1000
-    #     bdf.to_sql(sql_table, use_existing_sql_table=use_existing_sql_table)
-
+    def extract_to_csv(self, sql_statement, csv_root_directory, csv_file_name):
+        if sql_statement:
+            try:
+                csv_file = CsvFile.create_csv_file_instance_with_todays_date(csv_root_directory, csv_file_name)
+                csv_file.save_dataframe(
+                    df=self.read_data_into_dataframe(sql_statement)
+                )
+                return csv_file
+            except Exception as error:
+                AppLogger.logger.error(f"Error in MsSqlServer.extract_to_csv: {error}")
+        return None

@@ -11,6 +11,10 @@ class TestTheProjectMethods(unittest.TestCase):
         self.assertEqual("master", ms_connection_string.database_name)
         self.assertEqual(True, ms_connection_string.trusted_connection)
 
+    def test_1_get_pyodbc_connection_string_method(self):
+        self.assertEqual("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;",
+                         MsConnectionString.get_pyodbc_connection_string("localhost\sqlexpress"))
+
 
 if __name__ == '__main__':
     unittest.main()
