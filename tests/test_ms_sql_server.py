@@ -2,6 +2,7 @@ import unittest
 from zeppos_microsoft_sql_server.ms_sql_server import MsSqlServer
 import pandas as pd
 import pyodbc
+import os
 
 class TestTheProjectMethods(unittest.TestCase):
     def test_constructor_methods(self):
@@ -63,6 +64,15 @@ class TestTheProjectMethods(unittest.TestCase):
             "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
         self.assertEqual(1,
             ms_sql.read_data_into_dataframe("SELECT TOP 1 COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS").shape[0])
+
+    def test_extract_to_csv_method(self):
+        ms_sql = MsSqlServer(
+            "DRIVER={ODBC Driver 13 for SQL Server}; SERVER=localhost\sqlexpress; DATABASE=master; Trusted_Connection=yes;")
+        csv_file = ms_sql.extract_to_csv("select table_schema, table_name from information_schema.tables", r"c:\temp", "test.csv")
+        self.assertEqual(True, os.path.exists(csv_file.full_file_name))
+        df = pd.read_csv(csv_file.full_file_name, sep="|")
+        self.assertGreater(df.shape[0], 0)
+        os.remove(csv_file.full_file_name)
 
 
 if __name__ == '__main__':
