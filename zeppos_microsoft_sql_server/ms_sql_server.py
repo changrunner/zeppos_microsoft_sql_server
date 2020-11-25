@@ -4,6 +4,7 @@ from zeppos_microsoft_sql_server.ms_connection import MsConnection
 from zeppos_bcpy.sql_configuration import SqlConfiguration
 from zeppos_bcpy.dataframe import Dataframe
 from zeppos_microsoft_sql_server.sql_statement import SqlStatement
+from zeppos_csv.csv_file import CsvFile
 
 class MsSqlServer:
     def __init__(self, connection_string):
@@ -82,8 +83,16 @@ class MsSqlServer:
     def read_data_into_dataframe(self, sql_statement):
         try:
             return pd.read_sql(sql_statement, self.connection.pyodbc_connection)
-        except:
-            return pd.DataFrame()
+        except Exception as error:
+            AppLogger.logger.error(f"Error MsSqlServer.read_data_into_dataframe: {error}")
+            return None
+
+    def extract_to_csv(self, sql_statement, csv_root_directory, filename):
+        csv_file = CsvFile.create_csv_file_instance_with_todays_date(csv_root_directory, filename)
+        csv_file.save_dataframe(
+            df=self.read_data_into_dataframe(sql_statement)
+        )
+        return csv_file
 
     # @staticmethod
     # def insert_using_bcp(df, server_name, database_name,
