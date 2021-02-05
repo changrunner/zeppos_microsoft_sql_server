@@ -89,13 +89,14 @@ class MsSqlServer:
             AppLogger.logger.error(f"Error MsSqlServer.read_data_into_dataframe: {error}")
             return None
 
-    def extract_to_csv(self, sql_statement, csv_root_directory, csv_file_name, timeout=0):
+    def extract_to_csv(self, sql_statement, csv_root_directory, csv_file_name, timeout=0, sep="|"):
         if sql_statement:
             try:
                 AppLogger.logger.debug("Create csv file with today's date")
                 csv_file = CsvFile.create_csv_file_instance_with_todays_date(csv_root_directory, csv_file_name)
                 csv_file.save_dataframe(
-                    df=self.read_data_into_dataframe(sql_statement, timeout)
+                    df=self.read_data_into_dataframe(sql_statement, timeout),
+                    sep=sep
                 )
                 return csv_file
             except Exception as error:
