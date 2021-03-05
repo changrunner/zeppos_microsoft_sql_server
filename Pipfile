@@ -18,7 +18,7 @@ testfixtures = ">=6.15.0"
 
 [packages]
 sqlalchemy = ">=1.2.17"
-zeppos-csv = ">=0.0.28"
+zeppos-csv = ">=0.0.29"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
